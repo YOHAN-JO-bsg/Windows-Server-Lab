@@ -21,7 +21,7 @@
 1. Windows Defender 고급 보안 방화벽 정책 관리자(`Inbound Rules`)로 이동.
 2. RDP 서비스 활성화에 따라 관련 시스템 내장 규칙인 **`Remote Desktop - User Mode (TCP-In)` (기본 포트 3389)** 정책이 방화벽 엔진에서 자동으로 허용(`Enabled`) 상태로 전환되었는지 연동 유무를 팩트 체크함.
 
-![RDP 원격 인프라 연동 설정](../../assets/day02/06_rdp_enable_properties.png)
+![RDP 원격 인프라 연동 설정](../assets/day02/06_rdp_enable_properties.png)
 
 ---
 
@@ -32,7 +32,7 @@
 2. 대상 서버의 최고 관리자 계정 자격 증명(**`Administrator`**) 및 패스워드를 사용하여 인증 단계를 수행함.
 3. 사설 인증서 경고 단계를 통과한 후, 호스트 PC 환경 위에서 가상 머신 서버가 원격 세션 형태로 완벽하게 제어되는 것을 최종 검증함.
 
-![RDP 원격 인프라 연동 성공 완료](../../assets/day02/05_rdp_connected_v2.png)
+![RDP 원격 인프라 연동 성공 완료](../assets/day02/05_rdp_connected_v2.png)
 *▲ [📸 05_rdp_connected_v2.png] 호스트 PC와 가상 머신 서버 간의 RDP(3389) 보안 세션 수립 및 원격 관리 가용성 최종 검증 완료 화면*
 
 ---
