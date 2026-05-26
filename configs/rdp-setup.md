@@ -21,6 +21,8 @@
 1. Windows Defender 고급 보안 방화벽 정책 관리자(`Inbound Rules`)로 이동.
 2. RDP 서비스 활성화에 따라 관련 시스템 내장 규칙인 **`Remote Desktop - User Mode (TCP-In)` (기본 포트 3389)** 정책이 방화벽 엔진에서 자동으로 허용(`Enabled`) 상태로 전환되었는지 연동 유무를 팩트 체크함.
 
+![RDP 원격 인프라 연동 설정](../../assets/day02/06_rdp_enable_properties.png)
+
 ---
 
 ## 3. 호스트 PC-게스트 서버 원격 제어 최종 연동
