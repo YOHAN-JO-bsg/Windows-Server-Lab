@@ -3,8 +3,8 @@
 ## 1. 실습 목적
 - 노트북(호스트 PC)에 구축해 둔 VMware 가상화 환경에서 Windows Server 2022 가상 머신의 원격 데스크톱(RDP, 3389 포트) 기능을 직접 활성화해 보고, 실제로 외부에서 서버로의 원격 접속이 안정적으로 잘 이루어지는지 제어 프로세스를 확인해 보기 위함임.
 - **테스트 환경 사양**:
-  - **Host OS**: Windows 11
-  - **Guest OS**: Windows Server 2022 Datacenter Core
+  - **Host OS**: Windows 11 Home
+  - **Guest OS**: Windows Server 2022 Standard Evaluation (Desktop Experience)
   - **Host IP 대역 (VMnet8)**: `192.168.58.xxx`
   - **Guest IP**: `192.168.58.xxx`
 
