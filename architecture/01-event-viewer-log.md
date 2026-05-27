@@ -64,11 +64,11 @@ Register-ScheduledTask -TaskName "Daily_Network_Backup" -Action $action -Trigger
 
 ```
 
-![RDP 원격 인프라 연동 설정](../assets/day03/03_task_scheduler_registered.p)
+![RDP 원격 인프라 연동 설정](../assets/day03/03_task_scheduler_registered.png)
 
 ---
 
-## 5. 느낀 점 (Lesson Learned)
+## 5.Lesson Learned
 
 * **데이터 기반의 주도적 장애 진단 역량**: GUI 마우스 클릭 환경이 완비된 데스크톱 익스피리언스 버전임에도 불구하고, 실제 실무의 코어 운영 표준에 맞춰 파워쉘 파이프라인(`|`) 명령어를 조합해 시스템 커널 내부의 상세 로그를 원하는 형태로 즉각 커스터마이징하여 추출하는 기법을 습득함.
 * **자동화 중심의 인프라 효율성 인지**: 반복적인 인프라 백업 및 운영 업무를 작업 스케줄러를 통해 코드로 제어 및 등록해 보며, 시스템의 가용성을 유지하고 운영 리소스를 최소화하는 '실무 자동화 인프라 관리'의 본질을 배움.
