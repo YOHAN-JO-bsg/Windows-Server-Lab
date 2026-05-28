@@ -1,61 +1,63 @@
 # Windows Server 2022 이벤트 로그 분석 및 작업 자동화 검증
 
 ## 1. 개요
-- **목적**: Windows Server 2022 환경에서 GUI 마우스 조작을 배제하고 파워쉘(PowerShell) 인터페이스만을 활용하여 시스템 커널 및 보안 감사 로그를 진단하고, 작업 스케줄러를 통한 인프라 운영 자동화(Automation)를 실습함.
+- **목적**: Windows Server 2022 환경에서 PowerShell 기반으로 이벤트 로그를 확인하고, 작업 스케줄러(Task Scheduler)를 활용한 자동화 작업을 구성해보며 Windows 서버 운영 방식을 익힘.
 - **테스트 환경**:
   - **Host OS**: Windows 11 Home
   - **Guest OS**: Windows Server 2022 Standard Evaluation (Desktop Experience)
   - **Host IP 대역 (VMnet8)**: `192.168.58.xxx`
   - **Guest IP**: `192.168.58.xxx`
-
 ---
 
-## 2. 시스템 커널 로그(System Log) 분석 및 진단
+## 2. 시스템 로그(System Log) 확인 및 분석
 
-### [Step 1] Get-EventLog 활용 커널 핵심 로그 추출
-- 파워쉘 명령어를 통해 시스템 단에서 발생한 최신 경고 및 에러 로그 5개를 선별하여 표 형태로 데이터 포맷팅을 수행함.
+### [Step 1] PowerShell로 시스템 로그 확인
+- PowerShell에서 `Get-EventLog` 명령어를 사용해 최근 시스템 경고 및 에러 로그를 확인함.
 
 ```powershell
 Get-EventLog -LogName System -EntryType Error, Warning -Newest 5 | Format-Table TimeGenerated, Source, EventID, Message -AutoSize
 
 ```
 
-### [Step 2] 추출 데이터 분석 및 안정성 검증
+### [Step 2] 로그 내용 확인
 
-* **`EventID 1014 (DNS-Client)`**: 가상화 NAT 네트워크 환경에서 호스트 PC와의 링크 전환 시 발생하는 일시적인 DNS 응답 지연 경고 세션을 포착함. 시스템 다운을 유발하는 치명적인 크래시 요소가 아님을 확인 후 진단 종료함.
-* **`EventID 27 (e1i68x64)`**: 인텔 기가빗 네트워크 가상 드라이버 인터페이스가 커널 단에 정상 바인딩되어 통신 링크를 유지하고 있음을 역으로 검증함.
+* EventID 1014 (DNS-Client) 로그가 반복적으로 발생하는 것을 확인함.
+* VMware NAT 환경에서 네트워크 연결 과정 중 일시적으로 DNS 응답이 지연되며 발생한 경고 로그임을 확인했고, 서버 자체 문제는 아니었음.
+* EventID 27 (e1i68x64) 로그를 통해 Intel 가상 네트워크 어댑터가 정상 동작 중인 것도 함께 확인함.
 
 ![스크린샷1](../assets/day03/01_system_error_log_v2.png)
+▲ PowerShell에서 최근 시스템 경고 및 에러 로그를 조회한 화면
 
 ---
 
-## 3. 보안 감사 로그(Security Log) 분석 및 가용성 검증
+## 3. 보안 로그(Security Log) 확인 및 로그인 기록 분석
 
-### [Step 3] RDP 인증 세션 수립 흔적 역추적
+### [Step 3] 로그인 성공 로그 확인
 
-* 시스템 로그인 성공 고유 식별 코드인 **`InstanceId 4624`** 조건 절을 바인딩하여 최신 보안 자격 증명 성공 감사 로그를 리스트 형식으로 정밀 역추적함.
+* PowerShell에서 `InstanceId 4624` 조건으로 로그인 성공 이벤트 로그를 조회함.
 
 ```powershell
 Get-EventLog -LogName Security -InstanceId 4624 -Newest 3 | Format-List TimeGenerated, Message
 
 ```
 
-### [Step 4] 보안 자격 증명 데이터 팩트 체크
+### [Step 4] 로그 내용 확인
 
-* **로그인 성공 판정**: `Message : An account was successfully logged on.` 구문을 식별하여 원격 및 내부 인프라 권한 획득 세션이 수립되었음을 확인함.
-* **컨텍스트 명세**: `New Logon` 섹션의 최고 관리자 도메인 프로세스 권한이 내부 시스템 엔진(`services.exe`) 및 `Administrator` 자격 증명에 의해 안전하게 인덱싱 및 인가되었음을 데이터로 최종 교차 검증함.
+* An account was successfully logged on. 메시지를 통해 로그인 성공 기록이 정상적으로 저장되는 것을 확인함.
+* New Logon 항목에서 Administrator 계정으로 로그인된 기록을 확인했고, 원격 접속 및 관리자 권한 로그가 정상적으로 남는 것도 함께 확인함.
 
 ![RDP 원격 인프라 연동 설정](../assets/day03/02_security_audit_log_v2.png)
+▲ PowerShell에서 로그인 성공(Security Event ID 4624) 로그를 조회한 화면
 
 
 ---
 
-## 4. 작업 스케줄러(Task Scheduler)를 통한 운영 자동화
+## 4. 작업 스케줄러(Task Scheduler)를 활용한 자동화 설정
 
-### [Step 5] 백업 배치 스크립트 작성 및 스케줄러 예약 등록
+### [Step 5] 백업 스크립트 생성 및 예약 작업 등록
 
-* 매일 주기적으로 서버의 네트워크 인터페이스 상태를 기록하는 자동화 인프라 환경을 구축함.
-* 파워쉘을 통해 백업 배치 파일(`C:\backup.bat`)을 생성하고, 매일 아침 9시마다 최고 권한(`SYSTEM`)으로 백엔드에서 자동 가동되도록 예약 작업을 코드로 등록함.
+* - 네트워크 상태를 주기적으로 기록하기 위해 `backup.bat` 파일을 생성함.
+* PowerShell에서 작업 스케줄러(Task Scheduler)를 등록하여 매일 오전 9시에 자동 실행되도록 설정함.
 
 ```powershell
 $action = New-ScheduledTaskAction -Execute "C:\backup.bat"
@@ -65,12 +67,12 @@ Register-ScheduledTask -TaskName "Daily_Network_Backup" -Action $action -Trigger
 ```
 
 ![RDP 원격 인프라 연동 설정](../assets/day03/03_task_scheduler_registered.png)
+▲ PowerShell에서 예약 작업(Daily_Network_Backup)을 등록한 화면
 
 ---
 
 ## 5.Lesson Learned
 
-* **데이터 기반의 주도적 장애 진단 역량**: GUI 마우스 클릭 환경이 완비된 데스크톱 익스피리언스 버전임에도 불구하고, 실제 실무의 코어 운영 표준에 맞춰 파워쉘 파이프라인(`|`) 명령어를 조합해 시스템 커널 내부의 상세 로그를 원하는 형태로 즉각 커스터마이징하여 추출하는 기법을 습득함.
-* **자동화 중심의 인프라 효율성 인지**: 반복적인 인프라 백업 및 운영 업무를 작업 스케줄러를 통해 코드로 제어 및 등록해 보며, 시스템의 가용성을 유지하고 운영 리소스를 최소화하는 '실무 자동화 인프라 관리'의 본질을 배움.
-
+* PowerShell 명령어를 사용해 Windows 이벤트 로그를 직접 조회하고 필요한 정보만 확인하는 방법을 익힘.
+* 작업 스케줄러(Task Scheduler)를 통해 반복 작업을 자동화하면서 서버 운영에서 자동화의 중요성을 체감할 수 있었음.
 ```
