@@ -34,13 +34,13 @@ VMware 가상화 환경을 기반으로 Windows Server 2022 가상 인프라를 
    - 방화벽 정책 적용 후 정상 통신 여부 확인
 
 ### 시스템 로그 분석 및 운영 자동화
-* **[Event Viewer 기반 로그 분석](./docs/architecture/01-event-viewer-log.md#2-시스템-커널-로그system-log-분석-및-진단)**
+* **[Event Viewer 기반 로그 분석](/architecture/01-event-viewer-log.md#2-시스템-커널-로그system-log-분석-및-진단)**
   - Event Viewer와 PowerShell을 활용하여 DNS 관련 경고(Event ID 1014) 원인 분석
   - 로그인 감사 로그(Event ID 4624)를 확인하며 Windows 보안 로그 구조 이해
-* **[Task Scheduler 기반 자동화 구성](./docs/architecture/01-event-viewer-log.md#4-작업-스케줄러task-scheduler를-통한-운영-자동화)**
+* **[Task Scheduler 기반 자동화 구성](/architecture/01-event-viewer-log.md#4-작업-스케줄러task-scheduler를-통한-운영-자동화)**
   - PowerShell 스크립트를 작업 스케줄러에 등록하여 네트워크 상태 자동 기록
   - 주기적인 로그 저장 및 자동 실행 환경 구성
-* **[Linux와 Windows Server 운영 방식 비교](./docs/architecture/02-linux-vs-windows.md)**
+* **[Linux와 Windows Server 운영 방식 비교](/architecture/02-linux-vs-windows.md)**
   - Linux(Systemd)와 Windows SCM(Service Control Manager)의 서비스 관리 방식 비교
   - 방화벽 정책 구성, 로그 확인 방식, 스케줄러 구조 차이 분석 두 운영체제를 직접 운영하며 느낀 관리 방식과 운영 구조 차이 정리
 
